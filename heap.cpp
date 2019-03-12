@@ -3,6 +3,10 @@
 
 using namespace std;
 
+#ifndef _HEAP_
+#define _HEAP_
+
+
 #define MAX 256
 
 class Heap{
@@ -66,4 +70,7 @@ public:
         }
 
     }
-}
+
+};
+
+#endif
