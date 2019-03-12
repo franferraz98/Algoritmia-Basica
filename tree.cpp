@@ -13,7 +13,7 @@ class Tree{
     Tree* der;
 
 public:
-    Tree(): id(""), frecuencia(0){
+    Tree(): id(""), frecuencia(99999){
         this->izq = nullptr;
         this->der = nullptr;
     }
@@ -23,12 +23,15 @@ public:
         this->der = nullptr;   
     }
 
-    Tree(Tree x, Tree y){
+    Tree(Tree& x, Tree& y){
         this->id = x.id + y.id;
         this->frecuencia = x.frecuencia + y.frecuencia;
         if(x.frecuencia > y.frecuencia){
             this->izq = &y;            
             this->der = &x;            
+        }else{
+            this->der = &y;            
+            this->izq = &x; 
         }
     }
 
@@ -36,7 +39,7 @@ public:
         map<string,string> tabla;
         string codigo = "";
         tablaINM(tabla,codigo);
-
+        return tabla;
     }
 
     bool operator > (const Tree& rhs) {
@@ -47,18 +50,27 @@ public:
         return this->frecuencia < rhs.frecuencia;
     }
 
+    int getFrec(){
+        return this->frecuencia;
+    }
+
+    string getId(){
+        return this->id;
+    }
 private:
     void tablaINM(map<string,string>& tabla, string cod){
         if(this->izq == nullptr){
+            cout << "Caracter: " << this->id << " codigo: " << cod << endl;
             tabla[this->id]=cod;
         }
         else{
+            //cout << "bajando por el arbol\n";
             string aux = cod;
             aux = aux + "0";
-            tablaINM(tabla,aux);
+            this->izq->tablaINM(tabla,aux);
             aux = cod;
             aux = aux +"1";
-            tablaINM(tabla,aux);
+            this->der->tablaINM(tabla,aux);
         }
     }
 };

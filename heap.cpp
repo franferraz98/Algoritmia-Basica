@@ -27,12 +27,12 @@ public:
             cout << "No ha sido posible añadir el elemnto\n";
         }
         else{
-            this->numElem++;
             this->heap[this->numElem]  = nuevo;
             bool debeSubir;
             int i = this->numElem;
+            this->numElem++;
             if(i > 0){
-                debeSubir = this->heap[i] > this->heap[i/2];
+                debeSubir = this->heap[i] < this->heap[i/2];
             }else{ debeSubir = false; }
             while(debeSubir){
                 Tree aux = this->heap[i];
@@ -40,7 +40,7 @@ public:
                 this->heap[i/2] = aux;
                 i = i / 2;
                 if (i > 0){
-                    debeSubir = this->heap[i] > this->heap[i/2];
+                    debeSubir = this->heap[i] < this->heap[i/2];
                 }else{ debeSubir = false; }
             }
         }
@@ -49,16 +49,16 @@ public:
     void pop(){
         int i, j;
         if((this -> numElem)>0){
-            this->heap[0] = this->heap[this->numElem];
             this -> numElem--;
+            this->heap[0] = this->heap[this->numElem];
             i = 0;
-            while(i<(this->numElem)/2){
-                if(2*i==this->numElem || this->heap[2*i]>this->heap[2*i+1]){
+            while(i<(this->numElem/2)){
+                if( (2*i) == this->numElem || this->heap[(2*i)] < this->heap[(2*i+1)]){
                     j = 2*i;
                 }else{
                     j = 2*i+1;
                 }
-                if(this->heap[j] > this->heap[i]){
+                if(this->heap[j] < this->heap[i]){
                     Tree aux = this->heap[i];
                     this->heap[i] = this->heap[j];
                     this->heap[j] = aux;

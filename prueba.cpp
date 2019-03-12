@@ -11,20 +11,24 @@ Tree Huffman(map<string,int> conjunto){
     Heap Q;
     for(std::map<string,int>::iterator it=conjunto.begin(); it!=conjunto.end(); ++it){
         Tree aux(it->first,it->second);
+        //cout << "Se introduce ID: " << aux.getId() << " frec: " << aux.getFrec() << endl;
         Q.push(aux);
     }
     int n = conjunto.size(), i = 0;
-    for(i = 0; i < n; i++){
-        Tree x = Q.cima(); Q.pop();
-        Tree y = Q.cima(); Q.pop();
-        Tree z(x,y);
+    for(i = 0; i < n-1; i++){
+        Tree * x = new Tree(Q.cima()); Q.pop();
+        cout << "Se elimina ID: " << x->getId() << " frec: " << x->getFrec() << endl;
+        Tree * y = new Tree(Q.cima()); Q.pop();
+        cout << "Se elimina ID: " << y->getId() << " frec: " << y->getFrec() << endl;
+        Tree z(*x,*y);
         Q.push(z);
+        //cout << "ID: " << z.getId() << " frec: " << z.getFrec() << endl;
     }
     return Q.cima();
 }
 
 int main(int _argc, char ** _argv){
-    char a;
+    /*char a;
     for(int i = 0; i<_argc; i++){
         cout << _argv[i] << endl;
     }
@@ -54,5 +58,25 @@ int main(int _argc, char ** _argv){
     }
     else{
 
+    }*/
+    map<string,int> frec;
+    frec["a"] = 45;
+    frec["f"] = 5;
+    frec["e"] = 9;
+    frec["c"] = 12;
+    frec["b"] = 13;
+    frec["d"] = 16;
+
+    for(std::map<string,int>::iterator it=frec.begin(); it!=frec.end(); ++it){
+        cout << "clave: " << it->first << " frecuencia: " << it->second << endl;
     }
+
+    Tree arbolHuffman = Huffman(frec);
+    cout << "ID: " << arbolHuffman.getId() << " frec: " << arbolHuffman.getFrec() << endl;
+    map<string,string> tablaCod = arbolHuffman.tablaHuffman();
+
+    for(std::map<string,string>::iterator it=tablaCod.begin(); it!=tablaCod.end(); ++it){
+        cout << "clave: " << it->first << " codigo: " << it->second << endl;
+    }
+
 }
