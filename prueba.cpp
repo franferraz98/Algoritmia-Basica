@@ -6,6 +6,7 @@
 
 using namespace std;
 
+// Hola
 Tree Huffman(map<string,int> conjunto){
     Heap Q;
     for(std::map<string,int>::iterator it=conjunto.begin(); it!=conjunto.end(); ++it){
