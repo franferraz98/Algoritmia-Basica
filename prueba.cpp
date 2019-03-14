@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <string.h>
+#include <bitset>
 #include "tree.cpp"
 #include "heap.cpp"
 
@@ -28,24 +30,28 @@ Tree Huffman(map<string,int> conjunto){
 }
 
 int main(int _argc, char ** _argv){
-    /*char a;
+    char a;
     for(int i = 0; i<_argc; i++){
-        cout << _argv[i] << endl;
+        cout << i << _argv[i] << endl;
     }
 
-    if(_argv[1] == "-c"){
+    if(strcmp(_argv[1],"-c")==0){
+        // Crear el árbol y la tabla de códigos
         map<string,int> frecuencias;
         ifstream f(_argv[2]);
+        string name = _argv[2];
+        name += ".huf";
+        ofstream o;
+        o.open(name);
         if(f.is_open()){
             cout << "Se ha abierto el fichero" << endl;
         }
         int i = 0;
         string aux;
         while(!f.eof() && i < 200){
-            f.read(reinterpret_cast<char*>(a), 1);
-            //f.get(a);
+            f.get(a);
             aux = a;
-            frecuencias[aux]=frecuencias[aux]+1;
+            frecuencias[aux]++;
             cout << "Se ha leido el caracter: " << a << endl;
             i++;
         }
@@ -55,28 +61,57 @@ int main(int _argc, char ** _argv){
 
         map<string,string> tablaCod = arbolHuffman.tablaHuffman();
 
+        // Codificar el fichero
+        ifstream g(_argv[2]);
+        if(g.is_open()){
+            cout << "Se ha abierto el fichero" << endl;
+        }
+        i = 0;
+        aux;
+        string buffer;
+        bitset<8> bset;
+        int j;
+        string bufferaux;
+        bool ultima = true;
+        while(!g.eof() && i < 200){
+            ultima = false;
+            g.get(a);
+            aux = a;
+            cout << "Se ha leido el caracter: " << a << endl;
+            i++;
+
+            buffer += tablaCod[aux];
+            if(buffer.length()>=8){
+                bset.reset();
+                for(j=0; j<8; j++){
+                    if(buffer[j]=='1'){
+                        bset.set(j);
+                    }
+                }
+                bufferaux = "";
+                for(j=8; j<buffer.length(); j++){
+                    bufferaux += buffer[j];
+                }
+                buffer = bufferaux;
+                if(o.is_open()){
+                    o << bset;
+                }
+                ultima = true;
+            }
+        }
+        if(!ultima){
+            bset.reset();
+            for(j=0; j<buffer.length(); j++){
+                if(buffer[j]=='1'){
+                    bset.set(j);
+                }
+            }
+            o << bset;
+        }
+        g.close();
+        o.close();
     }
     else{
 
-    }*/
-    map<string,int> frec;
-    frec["a"] = 45;
-    frec["f"] = 5;
-    frec["e"] = 9;
-    frec["c"] = 12;
-    frec["b"] = 13;
-    frec["d"] = 16;
-
-    for(std::map<string,int>::iterator it=frec.begin(); it!=frec.end(); ++it){
-        cout << "clave: " << it->first << " frecuencia: " << it->second << endl;
     }
-
-    Tree arbolHuffman = Huffman(frec);
-    cout << "ID: " << arbolHuffman.getId() << " frec: " << arbolHuffman.getFrec() << endl;
-    map<string,string> tablaCod = arbolHuffman.tablaHuffman();
-
-    for(std::map<string,string>::iterator it=tablaCod.begin(); it!=tablaCod.end(); ++it){
-        cout << "clave: " << it->first << " codigo: " << it->second << endl;
-    }
-
 }
