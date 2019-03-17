@@ -84,8 +84,10 @@ private:
     void preorderArrayINM(pair<char,bool> vec[], int tam, int& i){
         vec[i] = make_pair(char(this->id[0]),(this->id.length == 1));
         if(this->izq != nullptr){
-            this->izq->preorderArrayINM(vec,tam,i+1);
-            this->der->preorderArrayINM(vec,tam,i+1);
+            i++;
+            this->izq->preorderArrayINM(vec,tam,i);
+            i++;
+            this->der->preorderArrayINM(vec,tam,i);
         }
     }
     void tablaINM(map<string,string>& tabla, string cod){
