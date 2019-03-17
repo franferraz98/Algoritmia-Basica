@@ -3,6 +3,7 @@
 #include <map>
 #include <string.h>
 #include <bitset>
+#include <utility>
 #include "tree.cpp"
 #include "heap.cpp"
 
@@ -29,6 +30,7 @@ Tree Huffman(map<string,int> conjunto){
     return Q.cima();
 }
 
+
 int main(int _argc, char ** _argv){
     char a;
     for(int i = 0; i<_argc; i++){
@@ -48,17 +50,21 @@ int main(int _argc, char ** _argv){
         }
         int i = 0;
         string aux;
-        while(!f.eof() && i < 200){
+        while(!f.eof()){
             f.get(a);
             aux = a;
             frecuencias[aux]++;
-            cout << "Se ha leido el caracter: " << a << endl;
-            i++;
+            //cout << "Se ha leido el caracter: " << a << endl;
+            //i++;
         }
         f.close();
 
         Tree arbolHuffman = Huffman(frecuencias);
 
+        int tam = frecuencias.size();
+        pair<char,bool> preorderTree[tam];
+        arbolHuffman.preorderArray(preorderTree,tam);
+        
         map<string,string> tablaCod = arbolHuffman.tablaHuffman();
 
         // Codificar el fichero
@@ -66,19 +72,21 @@ int main(int _argc, char ** _argv){
         if(g.is_open()){
             cout << "Se ha abierto el fichero" << endl;
         }
-        i = 0;
+        o << tam;
+        for(i = 0; i < tam; i++){
+            o << preorderTree[i].first << preorderTree[i].second;
+        }
         aux;
         string buffer;
         bitset<8> bset;
         int j;
         string bufferaux;
         bool ultima = true;
-        while(!g.eof() && i < 200){
+        while(!g.eof()){
             ultima = false;
             g.get(a);
             aux = a;
-            cout << "Se ha leido el caracter: " << a << endl;
-            i++;
+            //cout << "Se ha leido el caracter: " << a << endl;
 
             buffer += tablaCod[aux];
             if(buffer.length()>=8){
@@ -111,7 +119,20 @@ int main(int _argc, char ** _argv){
         g.close();
         o.close();
     }
-    else{
-
+    else if(strcmp(_argv[1],"-d")==0){
+        ifstream f(_argv[2]);
+        if(!f.is_open()){
+            cout << "El nombre del archivo no era correcto.\n";
+        }
+        int tam, a = 1;
+        char aux; bool aux2;
+        pair<char,bool> preorderTree[tam];
+        f >> tam;
+        for(int i = 0; i < tam; i++){
+            f >> aux >> aux2;
+            preorderTree[i] = make_pair(aux,aux2);
+        }
+        Tree cod(string(1,preorderTree[0].first),0);
+        cod.treeFromArray(preorderTree,tam,a);
     }
 }
