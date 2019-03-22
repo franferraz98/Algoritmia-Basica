@@ -56,11 +56,13 @@ public:
                 aux->treeFromArray(vec,tam,i);
             }
             i++;
-            Tree * aux = new Tree(string(1,vec[i].first),0);
-            this->der = aux;
-            if(!vec[i].second){
-                i++;
-                aux->treeFromArray(vec,tam,i);
+            if(i<tam){
+                Tree * aux2 = new Tree(string(1,vec[i].first),0);
+                this->der = aux2;
+                if(!vec[i].second){
+                    i++;
+                    aux->treeFromArray(vec,tam,i);
+                }
             }
         }
     }
@@ -82,7 +84,7 @@ public:
     }
 private:
     void preorderArrayINM(pair<char,bool> vec[], int tam, int& i){
-        vec[i] = make_pair(char(this->id[0]),(this->id.length == 1));
+        vec[i] = make_pair(char(this->id[0]),(this->id.length() == 1));
         if(this->izq != nullptr){
             i++;
             this->izq->preorderArrayINM(vec,tam,i);

@@ -120,6 +120,7 @@ int main(int _argc, char ** _argv){
         o.close();
     }
     else if(strcmp(_argv[1],"-d")==0){
+        
         ifstream f(_argv[2]);
         if(!f.is_open()){
             cout << "El nombre del archivo no era correcto.\n";
