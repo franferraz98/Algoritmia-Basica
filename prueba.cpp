@@ -3,10 +3,20 @@
 #include <map>
 #include <string.h>
 #include <bitset>
+#include <utility>
 #include "tree.cpp"
 #include "heap.cpp"
 
 using namespace std;
+
+//https://stackoverflow.com/questions/3061721/concatenate-boostdynamic-bitset-or-stdbitset
+template <size_t N1, size_t N2>
+bitset<N1 + N2> concat(const bitset<N1> &b1, const bitset<N2> &b2)
+{
+    string s1 = b1.to_string();
+    string s2 = b2.to_string();
+    return bitset<N1 + N2>(s1 + s2);
+}
 
 // Hola
 Tree Huffman(map<string,int> conjunto){
@@ -29,6 +39,7 @@ Tree Huffman(map<string,int> conjunto){
     return Q.cima();
 }
 
+
 int main(int _argc, char ** _argv){
     char a;
     for(int i = 0; i<_argc; i++){
@@ -48,17 +59,24 @@ int main(int _argc, char ** _argv){
         }
         int i = 0;
         string aux;
-        while(!f.eof() && i < 200){
+        while(!f.eof()){
             f.get(a);
             aux = a;
             frecuencias[aux]++;
-            cout << "Se ha leido el caracter: " << a << endl;
-            i++;
+            //cout << "Se ha leido el caracter: " << a << endl;
+            //i++;
         }
         f.close();
 
+        int tam = frecuencias.size();
+        tam = tam + tam - 1;
         Tree arbolHuffman = Huffman(frecuencias);
 
+        pair<char,bool> preorderTree[tam];
+        //Se construye un vector con el arbol recorrido en pre-order
+        arbolHuffman.preorderArray(preorderTree,tam);
+        
+        //Se construye la tabla de codificacion
         map<string,string> tablaCod = arbolHuffman.tablaHuffman();
 
         // Codificar el fichero
@@ -66,19 +84,25 @@ int main(int _argc, char ** _argv){
         if(g.is_open()){
             cout << "Se ha abierto el fichero" << endl;
         }
-        i = 0;
+
+        //Se almacenan tanto el numero de nodos como el vector del arbol
+        o << tam;
+        for(i = 0; i < tam; i++){
+            //cout << "Se escribe: " << preorderTree[i].first << " " << preorderTree[i].second << endl;;
+            o << preorderTree[i].first << preorderTree[i].second;
+        }
+
         aux;
         string buffer;
         bitset<8> bset;
         int j;
         string bufferaux;
         bool ultima = true;
-        while(!g.eof() && i < 200){
+        while(!g.eof()){
             ultima = false;
             g.get(a);
             aux = a;
-            cout << "Se ha leido el caracter: " << a << endl;
-            i++;
+            //cout << "Se ha leido el caracter: " << a << endl;
 
             buffer += tablaCod[aux];
             if(buffer.length()>=8){
@@ -94,7 +118,8 @@ int main(int _argc, char ** _argv){
                 }
                 buffer = bufferaux;
                 if(o.is_open()){
-                    o << bset;
+                    a = char(bset.to_ulong());
+                    o << a;
                 }
                 ultima = true;
             }
@@ -106,12 +131,82 @@ int main(int _argc, char ** _argv){
                     bset.set(j);
                 }
             }
-            o << bset;
+            a = char(bset.to_ulong());
+            o << a;
         }
         g.close();
         o.close();
     }
-    else{
+    else if(strcmp(_argv[1],"-d")==0){
+
+        cout << "Se va decodificar el fichero" << _argv[2] << endl;
+        ifstream f(_argv[2]);
+        if(!f.is_open()){
+            cout << "El nombre del archivo no era correcto.\n";
+        }
+        int tam, a;
+        char aux; bool aux2;
+        //Se lee el num de nodos del arbol
+        //f.read(reinterpret_cast<char *>(&tam), sizeof(int));
+        f >> tam;
+        cout << "el tam del arbol es de: " << tam << endl;
+        pair<char,bool> preorderTree[tam];
+        //Se leen los nodos del arbol
+        for(int i = 0; i < tam; i++){
+            f.get(aux);
+            f >> aux2;
+            //f.read(reinterpret_cast<char *>(&aux), sizeof(char));
+            //f.read(reinterpret_cast<char *>(&aux2), sizeof(bool));
+            preorderTree[i] = make_pair(aux,aux2);
+            cout << "Nuevo par: " << "(" << aux << ", " << aux2 << ")" << endl;
+        }
+        a = 1;
+        
+        //Se crea la raiz del arbol que es el primer elemento leido
+        Tree cod(string(1,preorderTree[0].first),0);
+        //Se construye el arbol que reconoce el codigo Huffman
+        cod.treeFromArray(preorderTree,tam,a);
+        map<string, string> tablaCod = cod.tablaHuffman();
+
+        string auxName = _argv[2];
+        string name = auxName.substr(0, auxName.length()-4);
+        ofstream o;
+        o.open(name);
+
+        bitset<8> lectura;
+        int i, veces=0;
+        char decod;
+
+        Tree * busqueda = &cod;
+        f.get(decod);
+        //f.read(reinterpret_cast<char *>(&decod), sizeof(char));
+        lectura = bitset<8>(decod);
+        cout << "Letra leida: " << decod << " binario de la letra: " << lectura << '\n';
+        while(!f.eof() && veces < 4){
+            for(i = 0; i < 8; i++){
+                if(lectura[i] == 0){
+                    busqueda = busqueda->getIzq();
+                }
+                else{
+                    busqueda = busqueda->getDer();
+                }
+
+                if(busqueda->getIzq() == nullptr)
+                {
+                    decod = busqueda->getId()[0];
+                    cout << "Letra encontrada " << "(" << decod << ")" << endl;
+                    o << decod;
+                    busqueda = &cod;
+                }
+            }
+            veces++;
+            //f >> lectura;
+            f.get(decod);
+            //f.read(reinterpret_cast<char *>(&decod), sizeof(char));
+            lectura = bitset<8>(decod);
+        }
+
+        f.close(); o.close();
 
     }
 }

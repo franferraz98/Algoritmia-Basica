@@ -42,6 +42,31 @@ public:
         return tabla;
     }
 
+    void preorderArray(pair<char,bool> vec[],int tam){
+        int i = 0;
+        preorderArrayINM(vec,tam,i);
+    }
+
+    void treeFromArray(pair<char,bool> vec[], int tam, int& i){
+        if(i<tam){
+            Tree * aux = new Tree(string(1,vec[i].first),0);
+            this->izq = aux;
+            if(!vec[i].second){
+                i++;
+                aux->treeFromArray(vec,tam,i);
+            }
+            i++;
+            if(i<tam){
+                Tree * aux2 = new Tree(string(1,vec[i].first),0);
+                this->der = aux2;
+                if(!vec[i].second){
+                    i++;
+                    aux2->treeFromArray(vec,tam,i);
+                }
+            }
+        }
+    }
+
     bool operator > (const Tree& rhs) {
         return this->frecuencia > rhs.frecuencia;
     }
@@ -53,11 +78,29 @@ public:
     int getFrec(){
         return this->frecuencia;
     }
+    
+    Tree * getIzq(){
+        return this->izq;
+    }
+    
+    Tree * getDer(){
+        return this->der;
+    }
 
     string getId(){
         return this->id;
     }
 private:
+    void preorderArrayINM(pair<char,bool> vec[], int tam, int& i){
+        //cout << "A guardar el par: " << char(this->id[0]) << (this->id.length() == 1) << endl;
+        vec[i] = make_pair(char(this->id[0]), (this->id.length() == 1));
+        if(this->izq != nullptr){
+            i++;
+            this->izq->preorderArrayINM(vec,tam,i);
+            i++;
+            this->der->preorderArrayINM(vec,tam,i);
+        }
+    }
     void tablaINM(map<string,string>& tabla, string cod){
         if(this->izq == nullptr){
             cout << "Caracter: " << this->id << " codigo: " << cod << endl;

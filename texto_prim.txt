@@ -24,7 +24,7 @@ public:
 
     void push(Tree nuevo){
         if(this->numElem == MAX){
-            cout << "No ha sido posible incorporar el elemnto\n";
+            cout << "No ha sido posible anadir el elemnto\n";
         }
         else{
             this->heap[this->numElem]  = nuevo;
