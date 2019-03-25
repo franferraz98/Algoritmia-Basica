@@ -103,7 +103,7 @@ private:
     }
     void tablaINM(map<string,string>& tabla, string cod){
         if(this->izq == nullptr){
-            //cout << "Caracter: " << this->id << " codigo: " << cod << endl;
+            cout << "Caracter: " << this->id << " codigo: " << cod << endl;
             tabla[this->id]=cod;
         }
         else{

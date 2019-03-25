@@ -88,7 +88,7 @@ int main(int _argc, char ** _argv){
         //Se almacenan tanto el numero de nodos como el vector del arbol
         o << tam;
         for(i = 0; i < tam; i++){
-            cout << "Se escribe: " << preorderTree[i].first << " " << preorderTree[i].second << endl;;
+            //cout << "Se escribe: " << preorderTree[i].first << " " << preorderTree[i].second << endl;;
             o << preorderTree[i].first << preorderTree[i].second;
         }
 
@@ -144,11 +144,12 @@ int main(int _argc, char ** _argv){
         if(!f.is_open()){
             cout << "El nombre del archivo no era correcto.\n";
         }
-        int tam, a = 1;
+        int tam, a;
         char aux; bool aux2;
         //Se lee el num de nodos del arbol
         //f.read(reinterpret_cast<char *>(&tam), sizeof(int));
         f >> tam;
+        cout << "el tam del arbol es de: " << tam << endl;
         pair<char,bool> preorderTree[tam];
         //Se leen los nodos del arbol
         for(int i = 0; i < tam; i++){
@@ -157,11 +158,14 @@ int main(int _argc, char ** _argv){
             //f.read(reinterpret_cast<char *>(&aux), sizeof(char));
             //f.read(reinterpret_cast<char *>(&aux2), sizeof(bool));
             preorderTree[i] = make_pair(aux,aux2);
+            cout << "Nuevo par: " << "(" << aux << ", " << aux2 << ")" << endl;
         }
+        a = 1;
         //Se crea la raiz del arbol que es el primer elemento leido
         Tree cod(string(1,preorderTree[0].first),0);
         //Se construye el arbol que reconoce el codigo Huffman
         cod.treeFromArray(preorderTree,tam,a);
+        map<string, string> tablaCod = cod.tablaHuffman();
 
         string auxName = _argv[2];
         string name = auxName.substr(0, auxName.length()-4);
@@ -169,7 +173,7 @@ int main(int _argc, char ** _argv){
         o.open(name);
 
         bitset<8> lectura;
-        int i;
+        int i, veces=0;
         char decod;
 
         Tree * busqueda = &cod;
@@ -177,24 +181,24 @@ int main(int _argc, char ** _argv){
         //f.read(reinterpret_cast<char *>(&decod), sizeof(char));
         lectura = bitset<8>(decod);
         cout << "Letra leida: " << decod << " binario de la letra: " << lectura << '\n';
-        while(!f.eof()){
+        while(!f.eof() && veces < 4){
             for(i = 0; i < 8; i++){
                 if(lectura[i] == 0){
-                    busqueda=busqueda->getIzq();
+                    busqueda = busqueda->getIzq();
                 }
                 else{
                     busqueda = busqueda->getDer();
                 }
 
-                if (busqueda->getIzq() == nullptr)
+                if(busqueda->getIzq() == nullptr)
                 {
                     decod = busqueda->getId()[0];
-                    cout << "Letra encontrada " << decod << endl;
+                    cout << "Letra encontrada " << "(" << decod << ")" << endl;
                     o << decod;
                     busqueda = &cod;
                 }
             }
-
+            veces++;
             //f >> lectura;
             f.get(decod);
             //f.read(reinterpret_cast<char *>(&decod), sizeof(char));
