@@ -61,7 +61,7 @@ public:
                 this->der = aux2;
                 if(!vec[i].second){
                     i++;
-                    aux->treeFromArray(vec,tam,i);
+                    aux2->treeFromArray(vec,tam,i);
                 }
             }
         }
@@ -78,13 +78,22 @@ public:
     int getFrec(){
         return this->frecuencia;
     }
+    
+    Tree * getIzq(){
+        return this->izq;
+    }
+    
+    Tree * getDer(){
+        return this->der;
+    }
 
     string getId(){
         return this->id;
     }
 private:
     void preorderArrayINM(pair<char,bool> vec[], int tam, int& i){
-        vec[i] = make_pair(char(this->id[0]),(this->id.length() == 1));
+        //cout << "A guardar el par: " << char(this->id[0]) << (this->id.length() == 1) << endl;
+        vec[i] = make_pair(char(this->id[0]), (this->id.length() == 1));
         if(this->izq != nullptr){
             i++;
             this->izq->preorderArrayINM(vec,tam,i);
@@ -94,7 +103,7 @@ private:
     }
     void tablaINM(map<string,string>& tabla, string cod){
         if(this->izq == nullptr){
-            cout << "Caracter: " << this->id << " codigo: " << cod << endl;
+            //cout << "Caracter: " << this->id << " codigo: " << cod << endl;
             tabla[this->id]=cod;
         }
         else{
