@@ -161,6 +161,7 @@ int main(int _argc, char ** _argv){
             cout << "Nuevo par: " << "(" << aux << ", " << aux2 << ")" << endl;
         }
         a = 1;
+        
         //Se crea la raiz del arbol que es el primer elemento leido
         Tree cod(string(1,preorderTree[0].first),0);
         //Se construye el arbol que reconoce el codigo Huffman
