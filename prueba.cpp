@@ -53,19 +53,19 @@ int main(int _argc, char ** _argv){
         string name = _argv[2];
         name += ".huf";
         ofstream o;
-        o.open(name);
+        o.open(name, ios::binary);
         if(f.is_open()){
             cout << "Se ha abierto el fichero" << endl;
         }
         int i = 0;
         string aux;
-        int caracteres = 0;
+        int caracteres = -1;
         while(!f.eof()){
             f.get(a);
             caracteres++;
             aux = a;
             frecuencias[aux]++;
-            //cout << "Se ha leido el caracter: " << a << endl;
+            cout << "Se ha leido el caracter: " << a << endl;
             //i++;
         }
         f.close();
@@ -86,13 +86,19 @@ int main(int _argc, char ** _argv){
         if(g.is_open()){
             cout << "Se ha abierto el fichero" << endl;
         }
-
+        char esp = ' ';
         //Se almacenan tanto el numero de nodos como el vector del arbol
-        o << caracteres << ' ';
-        o << tam;
+        o.write(reinterpret_cast<const char *>(&caracteres),sizeof(int));
+        o.write(reinterpret_cast<const char *>(&esp),sizeof(char));
+        o.write(reinterpret_cast<const char *>(&tam),sizeof(int));
+        //o << caracteres << ' ';
+        //o << tam;
         for(i = 0; i < tam; i++){
             //cout << "Se escribe: " << preorderTree[i].first << " " << preorderTree[i].second << endl;;
-            o << preorderTree[i].first << preorderTree[i].second;
+            //o << preorderTree[i].first << preorderTree[i].second;
+            o.write(reinterpret_cast<const char *>(&preorderTree[i].first),sizeof(int));
+            o.write(reinterpret_cast<const char *>(&preorderTree[i].second),sizeof(bool));
+
         }
 
         aux;
@@ -122,7 +128,9 @@ int main(int _argc, char ** _argv){
                 buffer = bufferaux;
                 if(o.is_open()){
                     a = char(bset.to_ulong());
-                    o << a;
+                    //o << a;
+                    o.write(reinterpret_cast<const char *>(&a),sizeof(char));
+
                 }
                 ultima = true;
             }
@@ -136,7 +144,9 @@ int main(int _argc, char ** _argv){
                 }
             }
             a = char(bset.to_ulong());
-            o << a;
+            //o << a;
+            o.write(reinterpret_cast<const char *>(&a),sizeof(char));
+
         }
         g.close();
         o.close();
@@ -151,10 +161,13 @@ int main(int _argc, char ** _argv){
         int tam, caracteres, a;
         char aux; bool aux2;
         //Se lee el num de nodos del arbol
-        //f.read(reinterpret_cast<char *>(&tam), sizeof(int));
-        f >> caracteres;
-        f >> tam;
+        f.read(reinterpret_cast<char *>(&caracteres), sizeof(int));
+        f.read(reinterpret_cast<char *>(&aux), sizeof(char));
+        f.read(reinterpret_cast<char *>(&tam), sizeof(int));
+        //f >> caracteres;
+        //f >> tam;
         cout << "el tam del arbol es de: " << tam << endl;
+        cout << "el num de caract es de: " << caracteres << endl;
         pair<char,bool> preorderTree[tam];
         //Se leen los nodos del arbol
         for(int i = 0; i < tam; i++){
