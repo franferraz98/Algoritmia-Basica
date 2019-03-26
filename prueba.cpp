@@ -59,8 +59,10 @@ int main(int _argc, char ** _argv){
         }
         int i = 0;
         string aux;
+        int caracteres = 0;
         while(!f.eof()){
             f.get(a);
+            caracteres++;
             aux = a;
             frecuencias[aux]++;
             //cout << "Se ha leido el caracter: " << a << endl;
@@ -86,6 +88,7 @@ int main(int _argc, char ** _argv){
         }
 
         //Se almacenan tanto el numero de nodos como el vector del arbol
+        o << caracteres << ' ';
         o << tam;
         for(i = 0; i < tam; i++){
             //cout << "Se escribe: " << preorderTree[i].first << " " << preorderTree[i].second << endl;;
@@ -124,6 +127,7 @@ int main(int _argc, char ** _argv){
                 ultima = true;
             }
         }
+
         if(!ultima){
             bset.reset();
             for(j=0; j<buffer.length(); j++){
@@ -140,23 +144,24 @@ int main(int _argc, char ** _argv){
     else if(strcmp(_argv[1],"-d")==0){
 
         cout << "Se va decodificar el fichero" << _argv[2] << endl;
-        ifstream f(_argv[2]);
+        ifstream f(_argv[2],ios::binary);
         if(!f.is_open()){
             cout << "El nombre del archivo no era correcto.\n";
         }
-        int tam, a;
+        int tam, caracteres, a;
         char aux; bool aux2;
         //Se lee el num de nodos del arbol
         //f.read(reinterpret_cast<char *>(&tam), sizeof(int));
+        f >> caracteres;
         f >> tam;
         cout << "el tam del arbol es de: " << tam << endl;
         pair<char,bool> preorderTree[tam];
         //Se leen los nodos del arbol
         for(int i = 0; i < tam; i++){
-            f.get(aux);
-            f >> aux2;
-            //f.read(reinterpret_cast<char *>(&aux), sizeof(char));
-            //f.read(reinterpret_cast<char *>(&aux2), sizeof(bool));
+            //f.get(aux);
+            //f >> aux2;
+            f.read(reinterpret_cast<char *>(&aux), sizeof(char));
+            f.read(reinterpret_cast<char *>(&aux2), sizeof(bool));
             preorderTree[i] = make_pair(aux,aux2);
             cout << "Nuevo par: " << "(" << aux << ", " << aux2 << ")" << endl;
         }
@@ -178,11 +183,11 @@ int main(int _argc, char ** _argv){
         char decod;
 
         Tree * busqueda = &cod;
-        f.get(decod);
-        //f.read(reinterpret_cast<char *>(&decod), sizeof(char));
+        //f.get(decod);
+        f.read(reinterpret_cast<char *>(&decod), sizeof(char));
         lectura = bitset<8>(decod);
         cout << "Letra leida: " << decod << " binario de la letra: " << lectura << '\n';
-        while(!f.eof() && veces < 4){
+        while(!f.eof() && veces < caracteres){
             for(i = 0; i < 8; i++){
                 if(lectura[i] == 0){
                     busqueda = busqueda->getIzq();
@@ -193,16 +198,19 @@ int main(int _argc, char ** _argv){
 
                 if(busqueda->getIzq() == nullptr)
                 {
+                    veces++;
+                    if(veces==caracteres){
+                        break;
+                    }
                     decod = busqueda->getId()[0];
                     cout << "Letra encontrada " << "(" << decod << ")" << endl;
                     o << decod;
                     busqueda = &cod;
                 }
             }
-            veces++;
             //f >> lectura;
-            f.get(decod);
-            //f.read(reinterpret_cast<char *>(&decod), sizeof(char));
+            //f.get(decod);
+            f.read(reinterpret_cast<char *>(&decod), sizeof(char));
             lectura = bitset<8>(decod);
         }
 
