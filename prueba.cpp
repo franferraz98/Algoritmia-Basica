@@ -88,7 +88,6 @@ int main(int _argc, char ** _argv){
             //cout << "Se escribe: " << preorderTree[i].first << " " << a << endl;
         }
 
-        aux;
         string buffer;
         bitset<8> bset;
         int j;
@@ -101,6 +100,7 @@ int main(int _argc, char ** _argv){
             aux = a;
     
             buffer += tablaCod[aux];
+            //Si suman mas de ocho en la ultima letra no la escribira y ultima valdrá true por eso a veces no escribe el ultimo caracter
             if(buffer.length()>=8){
                 bset.reset();
                 for(j=0; j<8; j++){
@@ -122,7 +122,7 @@ int main(int _argc, char ** _argv){
             }
         }
 
-        if(!ultima){
+        if(!ultima){//hacer tambien si buffer es mayor q 0??
             bset.reset();
             for(j=0; j<buffer.length(); j++){
                 if(buffer[j]=='1'){
