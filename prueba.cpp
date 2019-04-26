@@ -121,8 +121,7 @@ int main(int _argc, char ** _argv){
                 ultima = true;
             }
         }
-
-        if(!ultima){//hacer tambien si buffer es mayor q 0??
+        if(!ultima || buffer.length() > 0){//hacer tambien si buffer es mayor q 0??
             bset.reset();
             for(j=0; j<buffer.length(); j++){
                 if(buffer[j]=='1'){
@@ -130,8 +129,10 @@ int main(int _argc, char ** _argv){
                 }
             }
             a = char(bset.to_ulong());
-            o << a;
-            caracteres++;
+            if(o.is_open()){
+                o << a;
+                caracteres++;
+            }
         }
         cout << "Se han escrito en .huf " << caracteres << " caracteres.\n";
         g.close();
@@ -203,14 +204,14 @@ int main(int _argc, char ** _argv){
                 if (busqueda->getIzq() == nullptr)
                 {
                     veces++;
-                    if (veces == caracteres)
-                    {
-                        break;
-                    }
                     decod = busqueda->getId()[0];
                     //cout << "Letra encontrada " << "(" << decod << ")" << endl;
                     o << decod;
                     busqueda = &cod;
+                    if (veces == caracteres)
+                    {
+                        break;
+                    }
                 }
             }
             file.get(decod);
