@@ -5,6 +5,7 @@
 #include <bitset>
 #include <utility>
 #include <vector>
+#include <time.h>
 #include "tree.cpp"
 #include "heap.cpp"
 
@@ -174,7 +175,11 @@ int main(int _argc, char ** _argv){
     /** 
      * CODIFICACION DEL FICHERO .HUF 
      */
+    clock_t t;
+
     if(strcmp(_argv[1],"-c")==0){
+        t = clock();
+
         /* Declaración de variables */
         ifstream f(_argv[2]);
         string name = _argv[2];
@@ -216,13 +221,18 @@ int main(int _argc, char ** _argv){
 
         /* Codificación del fichero */
         codificar(o,tablaCod,_argv[2],preorderTree, tam, caracteres);
-       
+
+        t = clock() - t;
+        printf("It took me %d clicks (%f seconds).\n", t, ((float)t) / CLOCKS_PER_SEC);
+
         o.close();
     }
     /** 
      * DECODIFICACION DEL FICHERO .HUF 
      */
     else if(strcmp(_argv[1],"-d")==0){
+        t = clock();
+
         /* Declaración de variables */
         int tam, caracteres, a;
         char aux; char aux2; 
@@ -261,7 +271,10 @@ int main(int _argc, char ** _argv){
         
         /* Decodificación  del fichero */
         decodificar(cod,file,o,caracteres);
-        
+
+        t = clock() - t;
+        printf("It took me %d clicks (%f seconds).\n", t, ((float)t) / CLOCKS_PER_SEC);
+
         file.close();
         o.close();
     }
