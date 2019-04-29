@@ -9,19 +9,36 @@ using namespace std;
 
 #define MAX 256
 
+/* Clase Heap - implementa un montículo binario de forma estática como un
+ * vector de árboles de tamaño 256. El montículo se ordena de forma eficiente
+ * en función de la frecuencia de sus árboles almacenados, de tal modo que la
+ * frecuencia más baja siempre será su primer elemento, y cada nodo siempre 
+ * tendrá una frecuencia más baja que cualquiera de sus hijos.
+ * 
+ * La implementación estática se basa en almacenar los árboles de tal modo que
+ * índice padre = p
+ * índice hijo izquierdo = 2*p
+ * índice hijo derecho = 2*p + 1
+ */
 class Heap{
     Tree heap[MAX];
     int numElem;
 public:
 
+    /* Constructor */
     Heap(): numElem(0){
         
     }
 
+    /* Pre: true
+       Post: Devuelve el primer elemento */
     Tree cima(){
         return this->heap[0];
     }
 
+    /* Pre: numElem < MAX
+     * Post: Añade 'nuevo' al montículo y lo reordena
+     */
     void push(Tree nuevo){
         if(this->numElem == MAX){
             cout << "No ha sido posible incorporar el elemnto\n";
@@ -46,6 +63,9 @@ public:
         }
     }
 
+    /* Pre: numElem > 0 
+     * Post: elimina el primer elemento del montículo y lo reordena
+     */
     void pop(){
         int i, j;
         if((this -> numElem)>0){
