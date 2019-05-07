@@ -51,12 +51,12 @@ void codificar(ofstream& o, map<string,string> tablaCod, char * name, pair<char,
             o << caracteres << ' ';
             o << tam;
             for(int i = 0; i < tam; i++){
-                if(preorderTree[i].second){
+                /*if(preorderTree[i].second){
                     a = 't';
                 }else{
                     a = 'f';
-                }
-                o << preorderTree[i].first << a;
+                }*/
+                o << preorderTree[i].first /*<< a*/;
             }
 
             /* Declaración de variables */
@@ -88,28 +88,71 @@ void codificar(ofstream& o, map<string,string> tablaCod, char * name, pair<char,
                         bufferaux += buffer[j];
                     }
                     buffer = bufferaux;
-                    if(o.is_open()){
+                    //if(o.is_open()){
                         a = char(bset.to_ulong());
                         caracteres++;
                         o << a;
-                    }
+                    //}
                     ultima = true;
                 }
             }
 
             /* Módulo que escribe los bits sobrantes (cuando quedan menos
              * de 8) para no perder información */
-            if(!ultima || buffer.length() > 0){
-                bset.reset();
-                for(j=0; j<buffer.length(); j++){
-                    if(buffer[j]=='1'){
-                        bset.set(j);
+            if (!ultima || buffer.length() > 0)
+            {
+                if (buffer.length() <= 8)
+                {
+                    bset.reset();
+                    for(j=0; j<buffer.length(); j++){
+                        if(buffer[j]=='1'){
+                            bset.set(j);
+                        }
                     }
-                }
-                a = char(bset.to_ulong());
-                if(o.is_open()){
-                    o << a;
-                    caracteres++;
+                    a = char(bset.to_ulong());
+                    //if(o.is_open()){
+                        o << a;
+                        caracteres++;
+                    //}
+                }else{
+                    while (buffer.length() >= 8)
+                    {
+                        bset.reset();
+                        for (j = 0; j < 8; j++)
+                        {
+                            if (buffer[j] == '1')
+                            {
+                                bset.set(j);
+                            }
+                        }
+                        bufferaux = "";
+                        for (j = 8; j < buffer.length(); j++)
+                        {
+                            bufferaux += buffer[j];
+                        }
+                        buffer = bufferaux;
+                        //if(o.is_open()){
+                        a = char(bset.to_ulong());
+                        caracteres++;
+                        o << a;
+                        //}
+                        ultima = true;
+                    }
+                    if (!ultima || buffer.length() > 0)
+                    {
+                        bset.reset();
+                        for (j = 0; j < buffer.length(); j++)
+                        {
+                            if (buffer[j] == '1')
+                            {
+                                bset.set(j);
+                            }
+                        }
+                        a = char(bset.to_ulong());
+                        //if(o.is_open()){
+                        o << a;
+                        caracteres++;
+                    }
                 }
             }
             cout << "Se han escrito en " << name << ".huf " << caracteres << " caracteres." << endl;
@@ -179,6 +222,7 @@ int main(int _argc, char ** _argv){
 
     if(strcmp(_argv[1],"-c")==0){
         t = clock();
+        cout << "Comenzando la codificacion..." << endl;
 
         /* Declaración de variables */
         ifstream f(_argv[2]);
@@ -188,14 +232,24 @@ int main(int _argc, char ** _argv){
         int caracteres = -1, i = 0;
         char a;
         ofstream o;
-
         o.open(name);
+
         if(f.is_open()){
-            cout << "Se ha creado el fichero " << name << endl;
+            cout << "Se ha abierto el fichero " << _argv[2] << endl;
         } else{
             cout << "El nombre del archivo no era correcto." << endl;
             return -1;
         }
+
+        /*if (o.is_open())
+        {
+            cout << "Se ha abierto el fichero " << name << endl;
+        }
+        else
+        {
+            cout << "No se ha podido abrir/crear el fichero a .huf ." << endl;
+            return -1;
+        }*/
 
         /* Poblado de la tabla de frecuencias */
         map<string,int> frecuencias;
@@ -238,7 +292,7 @@ int main(int _argc, char ** _argv){
         char aux; char aux2; 
         ifstream file(_argv[2]);
 
-        cout << "Se va decodificar el fichero " << _argv[2] << endl;
+        cout << "Comenzando la decodificacion..." << endl;
         if(!file.is_open()){
             cout << "El nombre del archivo no era correcto." << endl;
             return -1;
@@ -246,15 +300,22 @@ int main(int _argc, char ** _argv){
         
         /* Recuperación del número de nodos del arbol, lectura e inserción en
          * un árbol en pre-orden de los nodos */
+        char lastChar = 'a';
         file >> caracteres;
         file >> tam;
         pair<char, bool> preorderTree[tam];
-        for (int i = 0; i < tam; i++)
+        file.get(aux);
+        preorderTree[0] = make_pair(aux, false);
+        for (int i = 1; i < tam; i++)
         {
             file.get(aux);
-            file.get(aux2);
-            preorderTree[i] = make_pair(aux, (aux2 == 't'));
+            //file.get(aux2);
+            preorderTree[i] = make_pair(aux, false);
+            if(preorderTree[i].first != preorderTree[i-1].first){
+                preorderTree[i-1].second = true;
+            }
         }
+        preorderTree[tam-1].second = true;
 
         /* Creación de la raíz del árbol (primer elemenro leido) y construcción
          * del árbol que reconoce el código Huffman*/
